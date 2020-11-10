@@ -16,9 +16,10 @@ Netsoc uses three subnets (provisionally):
 - `192.168.69.1`: Maths room boot server
 - `192.168.69.10`: `nintendo` (maths room switch)
 
-- `10.16.0.1`: `napalm`
-- `10.16.0.2`: `spoon`
-- `10.16.0.3`: `cube`
+- `10.16.0.1`: Maths room boot server
+- `10.16.1.1`: `napalm`
+- `10.16.1.2`: `spoon`
+- `10.16.1.3`: `cube`
 
 ## Maths server room
 
