@@ -46,7 +46,8 @@ network!), VLAN's are configured on `nintendo`.
 
 - VLAN 420 (TCD public network)
 
-    Tagged on all ports. Not PVID for any ports to avoid accidentally connecting
-    to the public network!
+    Untagged and PVID on ports 3, 4, 5, and 6 (for uplink to maths' switches).
+    Not untagged or PVID for any ports to avoid accidentally connecting to the
+    public network!
 
 *[PVID]: While a VLAN being untagged on a port tells the switch that a packet on that VLAN should be stripped of VLAN headers when going out on that port, the PVID sets the VLAN that should be assigned to packets coming into the port.
