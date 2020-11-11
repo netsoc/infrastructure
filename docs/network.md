@@ -21,6 +21,10 @@ Netsoc uses three subnets (provisionally):
 - `10.16.1.2`: `spoon`
 - `10.16.1.3`: `cube`
 
+!!! note
+    LAN IP addresses are handed out over DHCP (IP addresses fixed in
+    `dnsmasq.conf`)
+
 ## Maths server room
 
 Netsoc has a switch (named `nintendo`) which handles all our traffic in the
