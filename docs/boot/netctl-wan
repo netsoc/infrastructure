@@ -1,0 +1,8 @@
+Description='VLAN 420 public TCD network'
+Interface=wan
+Connection=vlan
+BindsToInterfaces=enp1s0
+VLANID=420
+IP=static
+Address="134.226.83.xxx/24"
+Gateway="134.226.83.1"

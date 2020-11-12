@@ -1,0 +1,86 @@
+#!ipxe
+# Based on https://boot.alpinelinux.org/boot.ipxe
+
+set mirror http://dl-cdn.alpinelinux.org/alpine
+set branch v3.12
+set version 3.12.1
+set flavor vanilla
+set arch x86_64
+
+set console tty0
+set cmdline modules=loop,squashfs ip=dhcp apkovl=http://shoe.netsoc.internal/apkovl/{MAC}.tar.gz ssh_key=http://shoe.netsoc.internal/netsoc.pub
+set default_cmdline default
+set title Netsoc network boot
+iseq ${manufacturer} QEMU && set flavor virt && set console ttyS0 ||
+
+:menu
+set space:hex 20:20
+set space ${space:string}
+menu ${title}
+item --gap Boot options
+item flavor ${space} Kernel flavor [ ${flavor} ]
+item console ${space} Set console [ ${console} ]
+item cmdline ${space} Linux cmdline [ ${default_cmdline} ]
+item --gap Booting
+item --default boot ${space} Boot with above settings
+item --gap Utilities
+item shell ${space} iPXE Shell
+item exit ${space} Exit iPXE
+item reboot ${space} Reboot system
+item poweroff ${space} Shut down system
+choose --timeout 5000 item
+goto ${item}
+
+:flavor
+menu ${title}
+item lts Linux lts
+item virt Linux virt
+choose flavor || goto shell
+goto menu
+
+:console
+menu ${title}
+item tty0 Console on tty0
+item ttyS0 Console on ttyS0
+item ttyS1 Console on ttyS1
+item ttyAMA0 Console on ttyAMA0
+item custom Enter custom console
+choose console || goto menu
+iseq ${console} custom && goto custom_console ||
+goto menu
+
+:custom_console
+clear console
+echo -n Enter console:${space} && read console
+goto menu
+
+:cmdline
+echo -n Enter extra cmdline options:${space} && read cmdline
+set default_cmdline modified
+goto menu
+
+:boot
+isset ${console} && set console console=${console} ||
+set img-url ${mirror}/${branch}/releases/${arch}/netboot-${version}
+set repo-url ${mirror}/${branch}/main
+set modloop-url ${img-url}/modloop-${flavor}
+imgfree
+kernel ${img-url}/vmlinuz-${flavor} initrd=/initramfs-${flavor} ${cmdline} alpine_repo=${repo-url} modloop=${modloop-url} ${console}
+initrd ${img-url}/initramfs-${flavor}
+boot
+goto exit
+
+:shell
+echo Type "exit" to return to menu.
+shell
+goto menu
+
+:reboot
+reboot
+
+:poweroff
+poweroff
+
+:exit
+clear menu
+exit 0

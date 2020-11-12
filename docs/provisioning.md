@@ -5,15 +5,97 @@ network from the boot server and runs from RAM. Packages are installed from the
 internet. Configuration is downloaded over HTTP from the boot server and
 overlayed on the base system.
 
-## iPXE
+## Boot server
+
+These instructions assume a working Arch Linux installation (and should be run
+as `root`).
+
+Make sure packages are up to date with `pacman -Syu` (reboot if kernel was
+upgraded). Once all of the sections below are completed, reboot.
+
+### dnsmasq
+Set up `dnsmasq`, the DNS and DHCP server
+
+1. Install `dnsmasq`
+2. Replace the contents of `/etc/dnsmasq.conf` with:
+
+    ```hl_lines="18"
+    --8<-- "docs/infrastructure/boot/dnsmasq.conf"
+    ```
+
+    This configuration sets up
+
+      - A forwarding DNS server
+      - DHCP server (with static leases, **add a new `dhcp-host` line for
+        each new server that should get the same IP**)
+      - DNS resolution for clients by hostname (`*.netsoc.internal`)
+      - TFTP server for loading iPXE over PXE (and then chain loading to
+        the boot script over HTTP)
+
+3. Create the TFTP directory `/srv/tftp`
+4. Replace `/etc/hosts` with `10.69.0.1 shoe.netsoc.internal shoe`
+5. Enable `dnsmasq` (`systemctl enable dnsmasq`)
+
+### Network interfaces
+
+1. Install `netctl`
+2. Remove any existing network configuration
+
+3. Paste the following into `/etc/netctl/lan`:
+
+    ```hl_lines="4"
+    --8<-- "docs/infrastructure/boot/netctl-lan"
+    ```
+
+    This sets up the `lan` interface with a static IP address. _Make sure to
+    replace `enp1s0` with the name of the ethernet interface!_
+
+4. Enable the `lan` config (`netctl enable lan`)
+5. Write the following into `/etc/netctl/wan`:
+
+    ```hl_lines="4 7"
+    --8<--- "docs/infrastructure/boot/netctl-wan"
+    ```
+
+    This sets up the `lan` interface with a static IP address. _Make sure to
+    replace `enp1s0` with the name of the ethernet interface!_
+
+6. Enable the `wan` config (`netctl enable wan`)
+7. Ensure `systemd-resolved` is stopped and disabled
+   (`systemctl disable --now systemd-resolved`)
+8. Replace `/etc/resolv.conf` with:
+
+    ```hl_lines="4 7"
+    --8<--- "docs/infrastructure/boot/resolv.conf"
+    ```
+
+    !!! warning
+        Make sure `/etc/resolv.conf` isn't a symlink to a volatile generated
+        file (`rm` it first to be safe)
+
+
+### nginx
+
+1. Install `nginx`
+2. Replace `/etc/nginx/nginx.conf` with:
+
+    ```
+    --8<--- "docs/infrastructure/boot/nginx.conf"
+    ```
+
+3. Enable `nginx` (`systemctl enable nginx`)
+4. Create the apk overlay directory `/srv/http/apkovl`
+
+### iPXE
 
 iPXE is an advanced bootloader designed for use with network booting. This is
 used to boot Alpine over the network. The version used on Netsoc is the current
 revision of the submodule in `boot/ipxe` (built from source).
 
-To update and build the latest iPXE EFI binary (all our servers boot with UEFI):
+To update and build the latest iPXE EFI binary (all our servers boot with UEFI),
+you should probably do this on a fast machine:
 
-1. Clone iPXE: `git submodule update --init`
+1. Clone this repo and then iPXE: `git submodule update --init`
 2. Update to the latest version:
     ```
     git -C boot/ipxe pull
@@ -22,6 +104,32 @@ To update and build the latest iPXE EFI binary (all our servers boot with UEFI):
 3. Build the latest EFI binary: `make -C boot/ipxe/src -j$(nproc) bin-x86_64-efi/ipxe.efi`
 4. Copy `boot/ipxe/src/bin-x86_64-efi/ipxe.efi` to the boot server
    (`/srv/tftp/ipxe.efi`)
+5. Create the iPXE boot script:
+
+    ```ipxe
+    --8<--- "docs/infrastructure/boot/boot.ipxe"
+    ```
+6. Copy an SSH public key to `/srv/http/netsoc.pub`
+
+### NFS
+
+NFS allows the booted systems to update their apkovl archives.
+
+1. Install `nfs-utils`
+2. Put `/srv/http/apkovl 10.69.0.0/16(rw,sync,no_subtree_check,no_root_squash,fsid=0)`
+   into `/etc/exports` (any machine on the LAN will have access as `root`)
+3. Enable `nfs-server` (`systemctl enable nfs-server`)
+
+### Firewall (nftables)
+
+1. Install `nftables`
+2. Replace the contents of `/etc/nftables.conf` with:
+
+    ```
+    --8<--- "docs/infrastructure/boot/nftables.conf"
+    ```
+3. Enable `nftables` (`systemctl enable nftables`)
+4. Write `net.ipv4.ip_forward=1` into `/etc/sysctl.d/forwarding.conf`
 
 ## Alpine Linux setup
 
