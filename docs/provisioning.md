@@ -33,7 +33,12 @@ Set up `dnsmasq`, the DNS and DHCP server
         the boot script over HTTP)
 
 3. Create the TFTP directory `/srv/tftp`
-4. Replace `/etc/hosts` with `10.69.0.1 shoe.netsoc.internal shoe`
+4. Replace `/etc/hosts` with:
+
+    ```
+    --8<-- "docs/infrastructure/boot/hosts"
+    ```
+
 5. Enable `dnsmasq` (`systemctl enable dnsmasq`)
 
 ### Network interfaces
