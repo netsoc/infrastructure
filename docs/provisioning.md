@@ -158,14 +158,13 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
         iface lan inet dhcp
             pre-up [ -e /sys/class/net/eth0 ] && (ip addr flush dev eth0 && ip link set dev eth0 down) || true
             pre-up nameif $IFACE 52:54:00:12:34:57
-            hostname myserver
 
         auto wan
         iface wan inet static
             vlan-raw-device lan
             vlan-id 420
             address 134.226.83.xxx
-            netmask 255.255.0.0
+            netmask 255.255.255.0
             broadcast 134.226.83.255
             gateway 134.226.83.1
         ```
@@ -180,11 +179,11 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 
 5. Replace the contents of `/etc/apk/repositories` with:
     ```
-    https://uk.alpinelinux.org/alpine/v3.12/main
-    https://uk.alpinelinux.org/alpine/v3.12/community
-    @edge https://uk.alpinelinux.org/alpine/edge/main
-    @edge https://uk.alpinelinux.org/alpine/edge/community
-    @testing https://uk.alpinelinux.org/alpine/edge/testing
+    http://uk.alpinelinux.org/alpine/v3.12/main
+    http://uk.alpinelinux.org/alpine/v3.12/community
+    @edge http://uk.alpinelinux.org/alpine/edge/main
+    @edge http://uk.alpinelinux.org/alpine/edge/community
+    @testing http://uk.alpinelinux.org/alpine/edge/testing
     ```
 
     Note the mirror name and Alpine branch (`v3.12` in this case). Run

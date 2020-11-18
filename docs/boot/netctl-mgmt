@@ -1,0 +1,5 @@
+Description='Netsoc management VLAN'
+Interface=eth0
+Connection=ethernet
+IP=static
+Address="192.168.69.1/24"

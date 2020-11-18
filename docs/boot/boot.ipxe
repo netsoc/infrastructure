@@ -8,7 +8,7 @@ set flavor vanilla
 set arch x86_64
 
 set console tty0
-set cmdline modules=loop,squashfs ip=dhcp apkovl=http://shoe.netsoc.internal/apkovl/{MAC}.tar.gz ssh_key=http://shoe.netsoc.internal/netsoc.pub
+set cmdline modules=loop,squashfsBOOTIF=01-${net0/mac:hexhyp} ip=dhcp apkovl=http://shoe.netsoc.internal/apkovl/{MAC}.tar.gz ssh_key=http://shoe.netsoc.internal/netsoc.pub
 set default_cmdline default
 set title Netsoc network boot
 iseq ${manufacturer} QEMU && set flavor virt && set console ttyS0 ||
