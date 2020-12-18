@@ -97,8 +97,7 @@ iPXE is an advanced bootloader designed for use with network booting. This is
 used to boot Alpine over the network. The version used on Netsoc is the current
 revision of the submodule in `boot/ipxe` (built from source).
 
-To update and build the latest iPXE EFI binary (all our servers boot with UEFI),
-you should probably do this on a fast machine:
+To update and build iPXE:
 
 1. Clone this repo and then iPXE: `git submodule update --init`
 2. Update to the latest version:
@@ -106,9 +105,11 @@ you should probably do this on a fast machine:
     git -C boot/ipxe pull
     git commit -am "Update iPXE version"
     ```
-3. Build the latest EFI binary: `make -C boot/ipxe/src -j$(nproc) bin-x86_64-efi/ipxe.efi`
-4. Copy `boot/ipxe/src/bin-x86_64-efi/ipxe.efi` to the boot server
-   (`/srv/tftp/ipxe.efi`)
+3. Build the latest EFI binary:
+   `make -C boot/ipxe/src -j$(nproc) bin-x86_64-efi/ipxe.efi bin/unionly.kpxe`
+4. Copy `boot/ipxe/src/bin-x86_64-efi/ipxe.efi` (for UEFI boot) and
+   `boot/ipxe/src/bin/undionly.kpxe` (for BIOS ) to the boot server
+   (`/srv/tftp/ipxe.efi`, `/srv/tftp/ipxe.kpxe`)
 5. Create the iPXE boot script:
 
     ```ipxe
@@ -184,7 +185,7 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
             Make sure to change the MAC address to match the LAN interface's MAC,
             set the `hostname` appropriately and the public IP address.
 
-        ```hl_lines="4 5 11"
+        ```hl_lines="3 4 10"
         auto lan
         iface lan inet dhcp
             pre-up [ -e /sys/class/net/eth0 ] && (ip addr flush dev eth0 && ip link set dev eth0 down) || true
@@ -254,7 +255,7 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 
     Now that the share is set up and accessible, edit `/etc/lbu/lbu.conf` and:
 
-      - Uncomment and set `LBU_BACKUPDIR` to `/mnt/lbu`
+      - Uncomment and set `LBU_BACKUPDIR` to `/mnt/lbu/myserver`
       - (Optional but **recommended**) Uncomment and set `BACKUP_LIMIT` to some
       value (e.g. 5) in order to keep a number of backups
 
@@ -267,11 +268,13 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
     1. Run `lbu status` (or `lbu st` for short) - a big list of files should
        appear; this is the list of modified files compared to the existing
        overlay archive
-    2. Do `lbu commit` to save the changes (a file `myserver.apkovl.tar.gz`
-       should now be present in `/mnt/lbu`)
-    3. Re-run `lbu status` - nothing should be listed, this means `lbu` is
+    2. Run `lbu include /root/.ssh/authorized_keys` to save the SSH public
+       key put in place automatically on boot
+    3. Do `lbu commit` to save the changes (a file `myserver.apkovl.tar.gz`
+       should now be present in `/mnt/lbu/myserver`)
+    4. Re-run `lbu status` - nothing should be listed, this means `lbu` is
        reading the saved archive and detecting there are no changed files.
-    4. Run `ln -sf myserver.apkovl.tar.gz /mnt/lbu/52:54:00:12:34:57.tar.gz`
+    5. Run `ln -sf /mnt/lbu/myserver/myserver.apkovl.tar.gz /mnt/lbu/52:54:00:12:34:57.tar.gz`
        (ensuring to insert the correct hostname and MAC address). This will
        enable the Alpine Linux init script to locate the overlay archive without
        the hostname on boot.

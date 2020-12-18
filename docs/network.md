@@ -21,8 +21,10 @@ Netsoc uses three subnets (provisionally):
 - `10.16.1.1`: `napalm`
 - `10.16.1.2`: `spoon`
 - `10.16.1.3`: `cube`
+- `10.16.1.4`: `gandalf`
 - `10.16.10.1`: `napalm-idrac`
 - `10.16.10.3`: `cube-idrac`
+- `10.16.10.4`: `gandalf-ilo`
 
 !!! note
     LAN IP addresses are handed out over DHCP (IP addresses fixed in
