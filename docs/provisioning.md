@@ -298,7 +298,8 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 
 ## Pi-KVM
 
-Pi-KVM is a neat software solution adding a sort of software BMC.
+Pi-KVM is a neat software solution adding a sort of software BMC with a
+Raspberry Pi 4.
 
 ### Disable auditing
 
@@ -336,7 +337,16 @@ The Linux watchdog will attempt to reset the machine if the system locks up.
 
 kvmd is the main Pi-KVM component.
 
-1. Install `kvmd-platform-v2-rpi4` and `kvmd-webterm`
+1. Add a USB drive (or additional SD card partition) for storing virtual media
+   images. Format the partition as `ext4` and add the following to `/etc/fstab`:
+
+   ```
+   /dev/sda1 /var/lib/kvmd/msd ext4 nodev,nosuid,noexec,ro,errors=remount-ro,data=journal,X-kvmd.otgmsd-root=/var/lib/kvmd/msd,X-kvmd.otgmsd-user=kvmd  0 0
+   ```
+
+   _Be sure to replace `/dev/sda1` with the actual device name!
+
+2. Install `kvmd-platform-v2-rpi4` and `kvmd-webterm`
 
     !!! warning
         `nginx` may be replaced by `nginx-mainline` (a dependency of kvmd). If this
@@ -344,11 +354,11 @@ kvmd is the main Pi-KVM component.
         `/etc/nginx/nginx.conf.pacsave`. Be sure to move this file back to
         `/etc/nginx/nginx.conf` once the install is complete.
 
-2. Disable kvmd's nginx on port 80 (in `/etc/kvmd/nginx/nginx.conf`)
-3. Enable `kvmd`, `kvmd-nginx`, `kvmd-webterm` and `kvmd-otg`.
-4. Add `tcp dport https accept` to the `wan-tcp` chain in `/etc/nftables`
+3. Disable kvmd's nginx on port 80 (in `/etc/kvmd/nginx/nginx.conf`)
+4. Enable `kvmd`, `kvmd-nginx`, `kvmd-webterm` and `kvmd-otg`.
+5. Add `tcp dport https accept` to the `wan-tcp` chain in `/etc/nftables`
    (and reload `nftables`)
-5. Add the following to `/boot/config.txt`:
+6. Add the following to `/boot/config.txt`:
 
     ```
     hdmi_force_hotplug=1
@@ -357,3 +367,10 @@ kvmd is the main Pi-KVM component.
     dtoverlay=disable-bt
     dtoverlay=dwc2,dr_mode=peripheral
     ```
+
+7. Check the USB port for the capture card. Once plugged in, kvmd uses a udev
+   rule to create a symlink `/dev/kvmd-video -> /dev/video0`. This is only done
+   if the `/dev/video0` is connected to a hardcoded USB port, however. The
+   script `/usr/bin/kvmd-udev-hdmiusb-check` will perform this check. Edit the
+   script and replace the `rpi4` port with the output of the following command:
+   `sudo udevadm info -q path -n /dev/video0 | sed 's|/| |g' | awk '{ print $11 }'`
