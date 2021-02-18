@@ -46,29 +46,41 @@ Set up `dnsmasq`, the DNS and DHCP server
 1. Install `netctl`
 2. Remove any existing network configuration
 
-3. Paste the following into `/etc/netctl/lan`:
+3. Paste the following into `/etc/netctl/mgmt`:
+
+    ```hl_lines="2"
+    --8<-- "docs/infrastructure/boot/netctl-mgmt"
+    ```
+
+    This sets up the `mgmt` interface with a static IP address. _Make sure to
+    replace `eth0` with the name of the ethernet interface!_
+
+4. Enable the `mgmt` config (`netctl enable mgmt`)
+
+5. Paste the following into `/etc/netctl/lan`:
 
     ```hl_lines="4"
     --8<-- "docs/infrastructure/boot/netctl-lan"
     ```
 
     This sets up the `lan` interface with a static IP address. _Make sure to
-    replace `enp1s0` with the name of the ethernet interface!_
+    replace `eth0` with the name of the ethernet interface!_
 
-4. Enable the `lan` config (`netctl enable lan`)
-5. Write the following into `/etc/netctl/wan`:
+6. Enable the `lan` config (`netctl enable lan`)
+7. Write the following into `/etc/netctl/wan`:
 
     ```hl_lines="4 7"
     --8<--- "docs/infrastructure/boot/netctl-wan"
     ```
 
-    This sets up the `lan` interface with a static IP address. _Make sure to
-    replace `enp1s0` with the name of the ethernet interface!_
+    This sets up the `wan` interface with a static IP address. _Make sure to
+    replace `eth0` with the name of the ethernet interface and `xxx` with the
+    desired public IP!_
 
-6. Enable the `wan` config (`netctl enable wan`)
-7. Ensure `systemd-resolved` is stopped and disabled
+9. Enable the `wan` config (`netctl enable wan`)
+10. Ensure `systemd-resolved` is stopped and disabled
    (`systemctl disable --now systemd-resolved`)
-8. Replace `/etc/resolv.conf` with:
+11. Replace `/etc/resolv.conf` with:
 
     ```hl_lines="4 7"
     --8<--- "docs/infrastructure/boot/resolv.conf"
@@ -134,6 +146,7 @@ NFS allows the booted systems to update their apkovl archives.
     ```
     --8<--- "docs/infrastructure/boot/nftables.conf"
     ```
+
 3. Enable `nftables` (`systemctl enable nftables`)
 4. Write `net.ipv4.ip_forward=1` into `/etc/sysctl.d/forwarding.conf`
 
@@ -282,3 +295,65 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 !!! danger
     Make **sure** to commit _any_ filesystem changes with `lbu commit` in
     future!
+
+## Pi-KVM
+
+Pi-KVM is a neat software solution adding a sort of software BMC.
+
+### Disable auditing
+
+Add `audit=0` to `/boot/cmdline.txt`.
+
+### pikvm pacman repo
+
+Pi-KVM provides pre-built packages for the Raspberry Pi via their own repo.
+
+1. Import the Pi-KVM PGP key (run `pacman-key -r 912C773ABBD1B584 && pacman-key --lsign-key 912C773ABBD1B584`)
+2. Add the following to `/etc/pacman.conf`:
+
+    ```
+    [pikvm]
+    Server = https://pikvm.org/repos/rpi4-arm
+    SigLevel = Required DatabaseOptional
+    ```
+
+### watchdog
+
+The Linux watchdog will attempt to reset the machine if the system locks up.
+
+1. Install `watchdog`
+2. Replace `/etc/watchdog.conf` with:
+
+    ```
+    --8<-- "docs/infrastructure/boot/watchdog.conf"
+    ```
+
+3. Enable `watchdog` (`systemctl enable watchdog`)
+
+*[BMC]: Baseband Management Controller
+
+### kvmd
+
+kvmd is the main Pi-KVM component.
+
+1. Install `kvmd-platform-v2-rpi4` and `kvmd-webterm`
+
+    !!! warning
+        `nginx` may be replaced by `nginx-mainline` (a dependency of kvmd). If this
+        is the case, `/etc/nginx/nginx.conf` will be backed up to
+        `/etc/nginx/nginx.conf.pacsave`. Be sure to move this file back to
+        `/etc/nginx/nginx.conf` once the install is complete.
+
+2. Disable kvmd's nginx on port 80 (in `/etc/kvmd/nginx/nginx.conf`)
+3. Enable `kvmd`, `kvmd-nginx`, `kvmd-webterm` and `kvmd-otg`.
+4. Add `tcp dport https accept` to the `wan-tcp` chain in `/etc/nftables`
+   (and reload `nftables`)
+5. Add the following to `/boot/config.txt`:
+
+    ```
+    hdmi_force_hotplug=1
+    gpu_mem=16
+    enable_uart=1
+    dtoverlay=disable-bt
+    dtoverlay=dwc2,dr_mode=peripheral
+    ```
