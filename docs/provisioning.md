@@ -120,7 +120,7 @@ To update and build iPXE:
 3. Build the latest EFI binary:
    `make -C boot/ipxe/src -j$(nproc) bin-x86_64-efi/ipxe.efi bin/unionly.kpxe`
 4. Copy `boot/ipxe/src/bin-x86_64-efi/ipxe.efi` (for UEFI boot) and
-   `boot/ipxe/src/bin/undionly.kpxe` (for BIOS ) to the boot server
+   `boot/ipxe/src/bin/undionly.kpxe` (for BIOS) to the boot server
    (`/srv/tftp/ipxe.efi`, `/srv/tftp/ipxe.kpxe`)
 5. Create the iPXE boot script:
 

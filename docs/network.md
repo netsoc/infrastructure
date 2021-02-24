@@ -32,11 +32,8 @@ Netsoc uses three subnets (provisionally):
 
 ## Maths server room
 
-Netsoc has a switch (named `nintendo`) which handles all our traffic in the
-maths department's server room. It is a Netgear GS748TS (48 port gigabit
-managed), donated by `dev`.
-
-![Maths server room rack](assets/maths.jpg)
+All our hardware in maths' server room is connected to `nintendo` (our switch,
+see the [hardware docs](../hardware/)).
 
 ### VLANs
 
