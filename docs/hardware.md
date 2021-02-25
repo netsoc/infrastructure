@@ -112,3 +112,8 @@ custom-built "gaming PC" without a GPU 😛.
   - Single power supply (???W)
 
 ## shoe
+
+`shoe` is a Raspberry Pi 4 (4GiB RAM model) which acts as a network boot server
+and "gateway" into our private LAN (for access to each server's BMC for
+example). `shoe` lives _inside_ `spoon` (since it acts as a "BMC" via
+[Pi-KVM](https://pikvm.org/)).
