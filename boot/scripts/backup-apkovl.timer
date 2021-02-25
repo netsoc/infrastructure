@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup APKOVL's weekly
+
+[Timer]
+OnCalendar=Wed *-*-* 07:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

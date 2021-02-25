@@ -1,0 +1,8 @@
+[Unit]
+Description=APKOVL backup
+
+[Service]
+Type=oneshot
+ExecStart=/var/lib/infrastructure/boot/scripts/backup_apkovl.sh
+User=netsoc
+Group=netsoc
