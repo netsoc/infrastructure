@@ -1,8 +1,1 @@
-Description='VLAN 420 public TCD network'
-Interface=wan
-Connection=vlan
-BindsToInterfaces=eth0
-VLANID=420
-IP=static
-Address="134.226.83.xxx/24"
-Gateway="134.226.83.1"
+../../boot/config/netctl/wan

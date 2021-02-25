@@ -1,7 +1,1 @@
-Description='VLAN 69 Netsoc LAN'
-Interface=lan
-Connection=vlan
-BindsToInterfaces=eth0
-VLANID=69
-IP=static
-Address="10.69.0.1/16"
+../../boot/config/netctl/lan
