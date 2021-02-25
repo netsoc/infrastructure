@@ -200,6 +200,36 @@ NFS allows the booted systems to update their apkovl archives.
 
 5. Enable and start the WireGuard service: `systemctl enable --now wg-quick@vpn`
 
+### APKOVL backup
+
+1. Import the Netsoc PGP secret key. To back up Alpine configurations stored on
+   the boot server, they first must be encrypted. You can transfer the PGP key
+   from a machine which already has it by running the following:
+
+    ```
+    gpg --export-secret-keys --armor DB2E28B13D53C8DD62FE560B408F6E592A12DF74 | ssh netsoc@my.boot.server -- gpg --import
+    ```
+
+2. Mark the key as trusted. Run
+   `gpg --edit DB2E28B13D53C8DD62FE560B408F6E592A12DF74`. Type `trust`, set the
+   level to 5 ("I trust ultimately") and accept, before quitting `gpg`.
+
+3. Install the backup service by symlinking `boot/scripts/backup-apkovl.service`
+   into `/etc/systemd/system/backup-apkovl.service`. Current **live** service:
+
+    ```
+    --8<-- "docs/infrastructure/boot/apkovl/backup.service"
+    ```
+
+4. Install the backup timer by symlinking `boot/scripts/backup-apkovl.timer`
+   into `/etc/systemd/system/backup-apkovl.timer`. Current **live** timer:
+
+    ```
+    --8<-- "docs/infrastructure/boot/apkovl/backup.timer"
+    ```
+
+5. Enable and start the timer (`systemctl enable --now backup-apkovl.timer`)
+
 ## Pi-KVM
 
 Pi-KVM is a neat software solution adding a sort of software BMC with a
