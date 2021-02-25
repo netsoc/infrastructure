@@ -33,7 +33,7 @@ jobs:
         run: |
           rm -rf "./docs/$DOCS_SUBDIR/"
           # Would use -a, but we want to dereference symlinks
-          cp -r --preserve=all ../main/docs/ "./docs/$DOCS_SUBDIR/"
+          cp -rpL ../main/docs/ "./docs/$DOCS_SUBDIR/"
 
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
