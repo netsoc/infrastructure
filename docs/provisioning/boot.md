@@ -26,6 +26,13 @@ Any time a step is given to symlink a configuration file out of this repo, _the
 provided inline configuration matches 1:1 with what is actually deployed on the
 current boot server!_
 
+!!! warning
+
+    When making changes to infrastructure repo-based config files, be sure to
+    commit and push them! Make sure to pull new external changes that are made
+    too. Failing to keep in sync with the upstream repo will cause the backup
+    script to fail!
+
 ### dnsmasq
 Set up `dnsmasq`, the DNS and DHCP server
 
