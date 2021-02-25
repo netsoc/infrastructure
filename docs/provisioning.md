@@ -8,16 +8,31 @@ overlayed on the base system.
 ## Boot server
 
 These instructions assume a working Arch Linux installation (and should be run
-as `root`).
+as `root` **unless otherwise specified**).
 
 Make sure packages are up to date with `pacman -Syu` (reboot if kernel was
 upgraded). Once all of the sections below are completed, reboot.
+
+To get started, clone the infrastructure repo into `/var/lib/infrastructure`,
+ensuring it's owned by the unprivileged user (assumed to be `netsoc`) _and_ is
+world-readable. This can be done by running (as `netsoc`):
+
+```
+sudo install -dm 755 -o netsoc -g netsoc /var/lib/infrastructure
+git clone git@github.com:netsoc/infrastructure.git /var/lib/infrastructure
+```
+
+Any time a step is given to symlink a configuration file out of this repo, _the
+provided inline configuration matches 1:1 with what is actually deployed on the
+current boot server!_
 
 ### dnsmasq
 Set up `dnsmasq`, the DNS and DHCP server
 
 1. Install `dnsmasq`
-2. Replace the contents of `/etc/dnsmasq.conf` with:
+2. Replace `/etc/dnsmasq.conf` with a symlink to `config/dnsmasq.conf` (i.e.
+   `ln -sf /var/lib/infrastructure/boot/config/dnsmasq.conf /etc/dnsmasq.conf`).
+   Current **live** configuration:
 
     ```hl_lines="18"
     --8<-- "docs/infrastructure/boot/dnsmasq.conf"
@@ -33,7 +48,8 @@ Set up `dnsmasq`, the DNS and DHCP server
         the boot script over HTTP)
 
 3. Create the TFTP directory `/srv/tftp`
-4. Replace `/etc/hosts` with:
+4. Replace `/etc/hosts` with a symlink to `boot/config/hosts`. Current **live**
+   configuration:
 
     ```
     --8<-- "docs/infrastructure/boot/hosts"
@@ -46,7 +62,8 @@ Set up `dnsmasq`, the DNS and DHCP server
 1. Install `netctl`
 2. Remove any existing network configuration
 
-3. Paste the following into `/etc/netctl/mgmt`:
+3. Create a symlink to `boot/config/netctl/mgmt` at `/etc/netctl/mgmt`. Current
+   **live** configuration:
 
     ```hl_lines="2"
     --8<-- "docs/infrastructure/boot/netctl-mgmt"
@@ -57,7 +74,11 @@ Set up `dnsmasq`, the DNS and DHCP server
 
 4. Enable the `mgmt` config (`netctl enable mgmt`)
 
-5. Paste the following into `/etc/netctl/lan`:
+    !!! warning
+        If the configuration ever changes, be sure to `netctl re-enable` it!
+
+5. Create a symlink to `boot/config/netctl/lan` at `/etc/netctl/lan`. Current
+   **live** configuration:
 
     ```hl_lines="4"
     --8<-- "docs/infrastructure/boot/netctl-lan"
@@ -67,34 +88,32 @@ Set up `dnsmasq`, the DNS and DHCP server
     replace `eth0` with the name of the ethernet interface!_
 
 6. Enable the `lan` config (`netctl enable lan`)
-7. Write the following into `/etc/netctl/wan`:
+7. Create a symlink to `boot/config/netctl/wan` at `/etc/netctl/wan`. Current
+   **live** configuration:
 
     ```hl_lines="4 7"
     --8<--- "docs/infrastructure/boot/netctl-wan"
     ```
 
     This sets up the `wan` interface with a static IP address. _Make sure to
-    replace `eth0` with the name of the ethernet interface and `xxx` with the
-    desired public IP!_
+    replace `eth0` with the name of the ethernet interface and use the desired
+    public IP!_
 
 9. Enable the `wan` config (`netctl enable wan`)
 10. Ensure `systemd-resolved` is stopped and disabled
    (`systemctl disable --now systemd-resolved`)
-11. Replace `/etc/resolv.conf` with:
+11. Replace `/etc/resolv.conf` with a symlink to `boot/config/resolv.conf`.
+    Current **live** configuration:
 
     ```hl_lines="4 7"
     --8<--- "docs/infrastructure/boot/resolv.conf"
     ```
 
-    !!! warning
-        Make sure `/etc/resolv.conf` isn't a symlink to a volatile generated
-        file (`rm` it first to be safe)
-
-
 ### nginx
 
 1. Install `nginx`
-2. Replace `/etc/nginx/nginx.conf` with:
+2. Replace `/etc/nginx/nginx.conf` with a symlink to `boot/config/nginx.conf`.
+   Current **live** configuration:
 
     ```
     --8<--- "docs/infrastructure/boot/nginx.conf"
@@ -113,20 +132,24 @@ To update and build iPXE:
 
 1. Clone this repo and then iPXE: `git submodule update --init`
 2. Update to the latest version:
+
     ```
     git -C boot/ipxe pull
     git commit -am "Update iPXE version"
     ```
+
 3. Build the latest EFI binary:
    `make -C boot/ipxe/src -j$(nproc) bin-x86_64-efi/ipxe.efi bin/unionly.kpxe`
 4. Copy `boot/ipxe/src/bin-x86_64-efi/ipxe.efi` (for UEFI boot) and
    `boot/ipxe/src/bin/undionly.kpxe` (for BIOS) to the boot server
    (`/srv/tftp/ipxe.efi`, `/srv/tftp/ipxe.kpxe`)
-5. Create the iPXE boot script:
+5. Create a symlink to `boot/config/boot.ipxe` at `/srv/http/boot.ipxe` (the
+   boot script). Current **live** configuration:
 
     ```ipxe
     --8<--- "docs/infrastructure/boot/boot.ipxe"
     ```
+
 6. Copy an SSH public key to `/srv/http/netsoc.pub`
 
 ### NFS
@@ -141,7 +164,8 @@ NFS allows the booted systems to update their apkovl archives.
 ### Firewall (nftables)
 
 1. Install `nftables`
-2. Replace the contents of `/etc/nftables.conf` with:
+2. Replace `/etc/nftables.conf` with a symlink to `boot/config/nftables.conf`.
+   Current **live** configuration:
 
     ```
     --8<--- "docs/infrastructure/boot/nftables.conf"
