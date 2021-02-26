@@ -2,8 +2,8 @@
 # Based on https://boot.alpinelinux.org/boot.ipxe
 
 set mirror http://dl-cdn.alpinelinux.org/alpine
-set branch v3.12
-set version 3.12.1
+set branch v3.13
+set version 3.13.2
 set flavor lts
 set arch x86_64
 
