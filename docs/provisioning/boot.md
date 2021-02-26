@@ -315,3 +315,15 @@ kvmd is the main Pi-KVM component.
    script `/usr/bin/kvmd-udev-hdmiusb-check` will perform this check. Edit the
    script and replace the `rpi4` port with the output of the following command:
    `sudo udevadm info -q path -n /dev/video0 | sed 's|/| |g' | awk '{ print $11 }'`
+## Upgrading Alpine
+
+Upgrading Alpine Linux on nodes is actually quite easy:
+
+On each node, edit `/etc/apk/repositories` and replace the branch in the mirror
+URL's (e.g. `http://uk.alpinelinux.org/alpine/v3.12/main` would become
+`http://uk.alpinelinux.org/alpine/v3.13/main` in an upgrade from 3.12 to 3.13).
+Don't forget to `lbu commit`!
+
+Following this, edit `/srv/http/boot.ipxe` on the boot server and replace the
+values of the `branch` and `version` variables with the latest release. Once
+that's done, simply reboot the nodes.

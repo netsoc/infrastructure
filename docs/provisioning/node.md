@@ -50,14 +50,14 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 
 5. Replace the contents of `/etc/apk/repositories` with:
     ```
-    http://uk.alpinelinux.org/alpine/v3.12/main
-    http://uk.alpinelinux.org/alpine/v3.12/community
+    http://uk.alpinelinux.org/alpine/v3.13/main
+    http://uk.alpinelinux.org/alpine/v3.13/community
     @edge http://uk.alpinelinux.org/alpine/edge/main
     @edge http://uk.alpinelinux.org/alpine/edge/community
     @testing http://uk.alpinelinux.org/alpine/edge/testing
     ```
 
-    Note the mirror name and Alpine branch (`v3.12` in this case). Run
+    Note the mirror name and Alpine branch (`v3.13` in this case). Run
     `apk update` after to update the package lists.
 
 ### NFS
@@ -72,7 +72,7 @@ Make sure the server to be provisioned is set to UEFI mode and boot over PXE
     1. Replace the contents of `/etc/autofs/auto.master` with the following:
 
         ```
-        /mnt /etc/autofs/auto.shoe --timeout 5
+        /media/autofs /etc/autofs/auto.shoe --timeout 5
         ```
 
     2. Paste the following into `/etc/autofs/auto.shoe`:
@@ -97,7 +97,7 @@ boot server via the NFS share set up above.
 
 1. Configure LBU by editing `/etc/lbu/lbu.conf` and:
 
-    - Uncomment and set `LBU_BACKUPDIR` to `/mnt/lbu/myserver`
+    - Uncomment and set `LBU_BACKUPDIR` to `/media/autofs/lbu/myserver`
     - (Optional but **recommended**) Uncomment and set `BACKUP_LIMIT` to some
     value (e.g. 5) in order to keep a number of backups
 
