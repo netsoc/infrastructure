@@ -5,7 +5,7 @@
 Netsoc uses three subnets (provisionally):
 
 - `10.69.0.0/16` (Netsoc private LAN)
-- `10.42.0.0/24` (Netsoc private VPN)
+- `10.79.0.0/24` (Netsoc private VPN)
 - `134.226.0.0/16` (TCD main allocation, Netsoc is permitted _only_ to use
   `134.226.83.3-254`)
 - `192.168.69.0/24` (Maths server room management network)
