@@ -3,7 +3,7 @@
 
 set mirror http://dl-cdn.alpinelinux.org/alpine
 set branch v3.13
-set version 3.13.2
+set version 3.13.5
 set flavor lts
 set arch x86_64
 
