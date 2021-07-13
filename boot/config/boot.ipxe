@@ -13,6 +13,9 @@ set default_cmdline default
 set title Netsoc network boot
 iseq ${manufacturer} QEMU && set flavor virt && set console ttyS0 ||
 
+# gandalf's remote console seems to be very slow without `noapic`
+iseq ${net0/mac} 40:a8:f0:30:3a:d4 && set cmdline ${cmdline} noapic ||
+
 :menu
 set space:hex 20:20
 set space ${space:string}
