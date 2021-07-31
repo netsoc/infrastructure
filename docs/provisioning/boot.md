@@ -272,8 +272,6 @@ The Linux watchdog will attempt to reset the machine if the system locks up.
 
 3. Enable `watchdog` (`systemctl enable watchdog`)
 
-*[BMC]: Baseband Management Controller
-
 ### kvmd
 
 kvmd is the main Pi-KVM component.
@@ -315,15 +313,68 @@ kvmd is the main Pi-KVM component.
    script `/usr/bin/kvmd-udev-hdmiusb-check` will perform this check. Edit the
    script and replace the `rpi4` port with the output of the following command:
    `sudo udevadm info -q path -n /dev/video0 | sed 's|/| |g' | awk '{ print $11 }'`
-## Upgrading Alpine
 
-Upgrading Alpine Linux on nodes is actually quite easy:
+## k3s Kubernetes API load balancer
 
-On each node, edit `/etc/apk/repositories` and replace the branch in the mirror
-URL's (e.g. `http://uk.alpinelinux.org/alpine/v3.12/main` would become
-`http://uk.alpinelinux.org/alpine/v3.13/main` in an upgrade from 3.12 to 3.13).
-Don't forget to `lbu commit`!
+When deploying k3s in HA mode, clients should access the Kubernetes API via a
+load balancer in case a node goes offline. There are a number of ways to achieve this.
 
-Following this, edit `/srv/http/boot.ipxe` on the boot server and replace the
-values of the `branch` and `version` variables with the latest release. Once
-that's done, simply reboot the nodes.
+### HAProxy
+
+HAProxy is a highly-configurable proxy, with more proxying features than nginx.
+
+1. Install `haproxy`
+2. Replace `/etc/haproxy/haproxy.cfg` with a symlink to `boot/config/haproxy.cfg`. Current **live** configuration:
+
+    ```
+    --8<-- "docs/infrastructure/boot/haproxy.cfg"
+    ```
+
+    This sets up each Kubernetes server node as a backend to the frontend on port 6443. For each new k3s server, a
+    `server` line should be added to the `backend`.
+
+3. Copy the k3s CA, admin client certificate and key to `/etc/haproxy` (these can be found in
+   `/var/lib/rancher/k3s/server/tls` on any k3s server node):
+
+    - `server-ca.crt` -> `k3s.ca`
+    - `client-admin.crt` -> `k3s-client.crt`
+    - `client-admin.key` -> `k3s-client.crt.key`
+
+4. Enable and start `haproxy`
+
+### IPVS
+
+!!! danger
+    Due to issues with IPVS NAT for clients on the same LAN as the load balancer, this method is currently not viable.
+
+IPVS provides in-kernel layer 4
+capabilities, which can be configured in a manner similar to `iptables`.
+However, on its own IPVS does not perform any health checks.
+[Keepalived](https://keepalived.readthedocs.io/en/latest/introduction.html)
+can be set up to program IPVS based on a configuration file which features
+high-level health checking capabilities.
+
+1. Install `keepalived`
+2. Set `KEEPALIVED_OPTIONS="-D -C"` in `/etc/sysconfig/keepalived`. This disables the failover functionality provided by
+   Keepalived, which is unneeded here as there will only be one load balancer.
+3. Replace `/etc/keepalived/keepalived.conf` with a symlink to `boot/config/keepalived.conf`. Current **live**
+   configuration:
+
+    ```
+    --8<-- "docs/infrastructure/boot/keepalived.conf"
+    ```
+
+    This sets up each Kubernetes server node as a backend to the service. For each new Kubernetes server, a
+    `real_server` section should be added.
+
+4. Copy the k3s CA, admin client certificate and key to `/etc/keepalived` (these can be found in
+   `/var/lib/rancher/k3s/server/tls` on any k3s server node):
+
+    - `server-ca.crt` -> `k3s.ca`
+    - `client-admin.crt` -> `k3s.crt`
+    - `client-admin.key` -> `k3s.key`
+
+5. Enable and start `keepalived`
+
+*[BMC]: Baseband Management Controller
+*[IPVS]: IP Virtual Server
