@@ -30,7 +30,7 @@ its configuration.
 ## cube
 
 `cube` is a Dell PowerEdge R410, the longest-running server in the Maths server
-room (purchased new `some_time_ago`). It's mounted on sliding rails, complete
+room (purchased new in 2010). It's mounted on sliding rails, complete
 with a fancy cable management arm.
 
 ### Specs
@@ -90,14 +90,14 @@ host society websites. It's our "newest" server (being purchased in mid-December
 <figure>
     <img width="50%" src="../assets/spoon.small.jpg" alt="cube" />
     <figcaption>
-        cube, sitting right next to the rack in Maths' server room.
+        spoon, sitting right next to the rack in Maths' server room.
     </figcaption>
 </figure>
 
 
 `spoon` (or `newspoon`) is a direct replacement for a very old Dell tower server
 (also known as `spoon`), purchased in 2018 with a CSC grant. It's effectively a
-custom-built "gaming PC" without a GPU 😛.
+custom-built "gaming PC" without a GPU.
 
 ### Specs
 
@@ -105,6 +105,7 @@ custom-built "gaming PC" without a GPU 😛.
   - 64GiB DDR4 (in 4x 16GiB DIMM's, running at 3000MHz)
   - Storage (on the built-in SATA controller, ordered by port):
 
+    - Western Digital Red WDC WD10EFRX-68FYTN0 (1TB, 5400rpm SATA)
     - Western Digital Red WDC WD10EFRX-68FYTN0 (1TB, 5400rpm SATA)
     - Western Digital Red WDC WD10EFRX-68FYTN0 (1TB, 5400rpm SATA)
     - HGST Ulstrastar HUS726060ALE610 (6TB, 7200rpm SATA)
