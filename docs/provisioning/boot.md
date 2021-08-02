@@ -41,7 +41,7 @@ Set up `dnsmasq`, the DNS and DHCP server
    `ln -sf /var/lib/infrastructure/boot/config/dnsmasq.conf /etc/dnsmasq.conf`).
    Current **live** configuration:
 
-    ```hl_lines="18"
+    ```hl_lines="20"
     --8<-- "docs/infrastructure/boot/dnsmasq.conf"
     ```
 
@@ -214,11 +214,11 @@ NFS allows the booted systems to update their apkovl archives.
    from a machine which already has it by running the following:
 
     ```
-    gpg --export-secret-keys --armor DB2E28B13D53C8DD62FE560B408F6E592A12DF74 | ssh netsoc@my.boot.server -- gpg --import
+    gpg --export-secret-keys --armor {{ pgp_key }} | ssh netsoc@my.boot.server -- gpg --import
     ```
 
 2. Mark the key as trusted. Run
-   `gpg --edit DB2E28B13D53C8DD62FE560B408F6E592A12DF74`. Type `trust`, set the
+   `gpg --edit {{ pgp_key }}`. Type `trust`, set the
    level to 5 ("I trust ultimately") and accept, before quitting `gpg`.
 
 3. Install the backup service by symlinking `boot/scripts/backup-apkovl.service`

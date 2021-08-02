@@ -402,10 +402,21 @@ Note: In the above config `10.42.0.0/16` is the cluster network.
 2. Enable and start `make-rshared` (`rc-service make-rshared start && rc-update add make-rshared boot`)
 3. Install `k3s`
 4. Edit `/etc/conf.d/k3s` and set `K3S_OPTS` to:
-    - On server nodes: `--node-ip=<Netsoc private IP> --node-external-ip=<Netsoc private IP> --flannel-backend=host-gw --kube-proxy-arg=proxy-mode=ipvs --kube-proxy-arg=ipvs-strict-arp --disable=traefik --disable=servicelb --disable=local-storage --server=https://cluster-api-loadbalancer:6443 --token=<k3s token>`.
-    **On the first run of the first server node only**, add `--cluster-init`. There will also not be any `--server` node
-    to start with. Once the cluster has settled, _be sure to remove `--cluster-init`_.
-    - On agent nodes (don't forget to change `K3S_EXEC` to `agent`!): `--node-ip=<Netsoc private IP> --node-external-ip=<Netsoc private IP> --kube-proxy-arg=proxy-mode=ipvs --kube-proxy-arg=ipvs-strict-arp --server=https://cluster-api-loadbalancer:6443 --token=<k3s token>`
+    - On server nodes:
+
+        ```
+        --node-ip=<Netsoc private IP> --node-external-ip=<Netsoc private IP> --flannel-backend=host-gw --kube-proxy-arg=proxy-mode=ipvs --kube-proxy-arg=ipvs-strict-arp --disable=traefik --disable=servicelb --disable=local-storage --server=https://cluster-api-loadbalancer:6443 --token=<k3s token>
+        ```
+
+        **On the first run of the first server node only**, add `--cluster-init`. There will also not be any `--server` node
+        to start with. Once the cluster has settled, _be sure to remove `--cluster-init`_ and restart `k3s`.
+
+    - On agent nodes (don't forget to change `K3S_EXEC` to `agent`!):
+
+        ```
+        --node-ip=<Netsoc private IP> --node-external-ip=<Netsoc private IP> --kube-proxy-arg=proxy-mode=ipvs --kube-proxy-arg=ipvs-strict-arp --server=https://cluster-api-loadbalancer:6443 --token=<k3s token>
+        ```
+
 5. Enable and start the `k3s` service (`rc-update add k3s && rc-service k3s start`)
 
 !!! info
