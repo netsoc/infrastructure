@@ -295,9 +295,7 @@ kvmd is the main Pi-KVM component.
 
 3. Disable kvmd's nginx on port 80 (in `/etc/kvmd/nginx/nginx.conf`)
 4. Enable `kvmd`, `kvmd-nginx`, `kvmd-webterm` and `kvmd-otg`.
-5. Add `tcp dport https accept` to the `wan-tcp` chain in `/etc/nftables`
-   (and reload `nftables`)
-6. Add the following to `/boot/config.txt`:
+5. Add the following to `/boot/config.txt`:
 
     ```
     hdmi_force_hotplug=1
@@ -307,7 +305,7 @@ kvmd is the main Pi-KVM component.
     dtoverlay=dwc2,dr_mode=peripheral
     ```
 
-7. Check the USB port for the capture card. Once plugged in, kvmd uses a udev
+6. Check the USB port for the capture card. Once plugged in, kvmd uses a udev
    rule to create a symlink `/dev/kvmd-video -> /dev/video0`. This is only done
    if the `/dev/video0` is connected to a hardcoded USB port, however. The
    script `/usr/bin/kvmd-udev-hdmiusb-check` will perform this check. Edit the

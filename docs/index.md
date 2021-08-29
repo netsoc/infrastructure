@@ -1,3 +1,3 @@
 # Introduction
 
-This section documents the low-level infrastructure for Netsoc's servers.
+This section documents the overall infrastructure for Netsoc's servers.

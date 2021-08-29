@@ -1,0 +1,6 @@
+nav:
+  - boot.md
+  - node.md
+  - vm.md
+  - mailcow.md
+  - kubernetes.md
