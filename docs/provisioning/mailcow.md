@@ -17,7 +17,7 @@ necessary but a mail server should really run in its own VM).
 
 2. Install Docker and Docker Compose (`apk add docker docker-compose`)
 3. Enable and start Docker: `rc-update add docker && rc-service docker start`
-4. Install `bash`, `grep`, `coreutils` and `curl`
+4. Install `bash`, `grep`, `sed`, `less`, `coreutils` and `curl`
 5. Clone https://github.com/mailcow/mailcow-dockerized into `/var/lib/docker`
 6. Run `generate_config.sh` and make the following modifications to `mailcow.conf`:
 
@@ -36,3 +36,8 @@ necessary but a mail server should really run in its own VM).
     ```
 
     Run `docker-compose restart unbound-mailcow` to restart Unbound when done.
+
+## Upgrading
+
+mailcow provides an update script, see [here](https://mailcow.github.io/mailcow-dockerized-docs/i_u_m_update/) for
+details.
