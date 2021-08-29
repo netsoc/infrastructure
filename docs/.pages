@@ -1,0 +1,6 @@
+nav:
+  - index.md
+  - hardware.md
+  - network.md
+  - sysadmin.md
+  - provisioning
