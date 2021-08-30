@@ -13,6 +13,7 @@ In order to get started as a sysadmin for Netsoc, you'll need:
 
 To connect to Netsoc you'll need a few things (provided by an existing sysadmin!):
 
+- Your SSH public added to `~/.ssh/authorized_keys` on `shoe`
 - A copy of the Netsoc SSH key (`~/.ssh/id_rsa` on `shoe`) to connect to machines
 - A copy of the Netsoc PGP key (can be exported from `shoe` via `gpg --export-secret-keys --armor {{ pgp_key }}` and
   imported with `gpg --import`)
