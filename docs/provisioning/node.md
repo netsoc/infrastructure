@@ -5,6 +5,18 @@
 Make sure the server to be provisioned is set to UEFI mode and boot over PXE
 (IPv4). To install:
 
+### BIOS Configuration
+
+1. Enable SVM
+
+2. Enable Network Stack / Boot over PXE
+
+3. Switch to UEFI-only. 
+
+4. Set the boot option to boot from PXE *first* 
+
+5. Enable XMP or equivilent (e.g. DOCP on AMD platforms)
+
 ### Main install
 
 1. Boot over PXE, the correct flavor should be pre-selected (`lts` for bare
