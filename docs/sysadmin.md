@@ -34,7 +34,7 @@ KVM capabilities. _All of the BMCs require VPN connectivity to access._
 ### `spoon`
 
 `shoe` hosts PiKVM for access to `spoon`. Once connected to the VPN, simply visit [https://shoe](https://shoe). The
-credentials are `root:hunter22`.
+credentials are `admin:hunter22`.
 
 ### `gandalf`
 
